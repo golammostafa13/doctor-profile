@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- A profile with a pulse, knocked out of a volt tile with one corner cut.
+       Kept in step by hand with `BrandArt` in src/components/brand.tsx and
+       with scripts/build-icons.mjs. -->
+  <path d="M0 0H48V34.5L34.5 48H0Z" fill="#fce300"/>
+  <circle cx="24" cy="15.4" r="7" fill="#05080a"/>
+  <path d="M10 33.6h5.4l3-6.4 4 13 3.4-8.4 2.2 1.8H38"
+        stroke="#05080a" stroke-width="4" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
