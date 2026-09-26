@@ -23,10 +23,7 @@ const FILTER_LABEL = (t: ReturnType<typeof useDash>["t"]): Record<StatusFilter, 
 });
 type Sort = "updated" | "name" | "created";
 
-/**
- * Every doctor, filterable in the browser. The whole roster is already one
- * document, so searching it here costs nothing and answers per keystroke.
- */
+
 export function DoctorsTable({
   lang,
   doctors,
