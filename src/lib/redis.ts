@@ -22,10 +22,41 @@
  */
 // `||`, not `??`: an env file with `KV_REST_API_URL=` left blank (as
 // .env.example ships) must fall through to the UPSTASH_* pair, not win with "".
-const redisUrl =
-  process.env.KV_REST_API_URL?.trim() || process.env.UPSTASH_REDIS_REST_URL?.trim();
-const redisToken =
-  process.env.KV_REST_API_TOKEN?.trim() || process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+//
+// Quotes are stripped because `.env` files allow `KEY="value"` and drop them,
+// but a hosting dashboard keeps whatever is pasted — so the same line copied
+// into Vercel arrives as `"https://…"`, which the SDK rejects as a URL.
+function envValue(name: string): string | undefined {
+  const raw = process.env[name]?.trim();
+  if (!raw) return undefined;
+  const unquoted = raw.replace(/^(["'])(.*)\1$/, "$2").trim();
+  return unquoted || undefined;
+}
+
+/**
+ * The REST URL, from whichever variable is set.
+ *
+ * Accepts the `rediss://default:…@host:6379` connection string the Upstash
+ * console also shows, since it is an easy one to paste by mistake: the REST
+ * endpoint is the same host over https. Anything else is a configuration
+ * error, reported by name — never by value, which may hold the password.
+ */
+function restUrl(): string | undefined {
+  for (const name of ["KV_REST_API_URL", "UPSTASH_REDIS_REST_URL"]) {
+    const value = envValue(name);
+    if (!value) continue;
+    if (/^https:\/\//i.test(value)) return value;
+    const conn = value.match(/^rediss?:\/\/(?:[^@/]*@)?([^:/?#]+)/i);
+    if (conn) return `https://${conn[1]}`;
+    throw new Error(
+      `${name} must be the Upstash REST URL, starting with https:// (it is set, but to something else).`,
+    );
+  }
+  return undefined;
+}
+
+const redisUrl = restUrl();
+const redisToken = envValue("KV_REST_API_TOKEN") || envValue("UPSTASH_REDIS_REST_TOKEN");
 
 /**
  * This site's namespace inside a possibly shared database.
