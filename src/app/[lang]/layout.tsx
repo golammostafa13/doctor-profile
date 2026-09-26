@@ -10,6 +10,7 @@ import {
 import { hasLocale, locales, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
+import { themeScript } from "@/components/theme-toggle";
 import "@/app/globals.css";
 
 /**
@@ -94,14 +95,17 @@ export default async function LocaleLayout(props: LayoutProps<"/[lang]">) {
   const dict = getDictionary(lang as Locale);
 
   return (
-    // Dark, and only dark: the palette is three colours, and a light theme
-    // would need a fourth. The `dark` class is set here rather than by a theme
-    // library, which would inject an inline script to choose it at runtime —
-    // work with no choice to make, and a React warning on client renders.
+    // Rendered dark, which is the default. A visitor who has chosen day gets
+    // `light` swapped in by the inline script before first paint — hence
+    // suppressHydrationWarning, since that class differs from the markup.
     <html
       lang={lang}
       className={`dark ${display.variable} ${body.variable} ${mono.variable} ${bengali.variable} ${serifBengali.variable}`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-dvh bg-bg text-ink antialiased">
         <a
           href="#main"

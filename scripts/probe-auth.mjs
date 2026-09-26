@@ -54,7 +54,7 @@ try {
   console.log("-- sign in --");
   await attempt("admin@demo.test", "demo-admin-2026", "admin, right password");
   await attempt("admin@demo.test", "wrong", "admin, wrong password");
-  await attempt(email, "demo-doctor-2026", "doctor, right password");
+  await attempt(email, "Square", "doctor, right password");
   await attempt(email, "wrong", "doctor, wrong password");
   await attempt("nobody@nowhere.test", "wrong", "unknown account");
   await attempt("notlisted@demo.test", "demo-admin-2026", "admin pw, unlisted email");

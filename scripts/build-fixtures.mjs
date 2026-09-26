@@ -42,7 +42,7 @@ const photoNext = { female: 0, male: 0 };
 const outDir = join(root, "src", "lib", "fixtures");
 
 const COUNT = 100;
-const DEMO_PASSWORD = "demo-doctor-2026";
+const DEMO_PASSWORD = "Square";
 
 /** mulberry32: small, seeded, and good enough for placing fake chambers. */
 function rng(seed) {
@@ -224,7 +224,7 @@ async function buildDoctor(i) {
 
   const doctor = {
     id, linkNo: link, slug,
-    email: `${slug.replace(/-/g, ".")}@demo.doctorsprofile.test`,
+    email: `${slug.replace(/-/g, ".")}@gmail.com.bd`,
     passwordHash: await hashPassword(DEMO_PASSWORD, id),
     passwordVersion: 1,
     passwordSetAt: NOW,
@@ -282,7 +282,7 @@ async function buildDoctor(i) {
     achievements: deep ? pickN(ACHIEVEMENTS, 3) : pickN(ACHIEVEMENTS, 1),
     social: i % 3 === 0 ? { facebook: `https://www.facebook.com/${slug}` } : {},
     publicPhone: `01${int(3, 9)}${String(int(10_000_000, 99_999_999))}`,
-    publicEmail: `${slug.replace(/-/g, ".")}@demo.doctorsprofile.test`,
+    publicEmail: `${slug.replace(/-/g, ".")}@gmail.com.bd`,
     publicAddress: { en: chambers[0].address.en, bn: chambers[0].address.bn },
     hospitalIds: [...new Set(chambers.map((c) => c.hospitalId))],
     locationIds: [...new Set(chambers.map((c) => c.locationId))],

@@ -31,16 +31,25 @@ export async function seedDemoData(store: Store): Promise<{ doctors: number }> {
     existing = [];
   }
 
+  // Writes go out in parallel batches: each is an HTTPS round trip to Upstash
+  // (~100ms from Dhaka), and six hundred of them one after another made the
+  // admin's Import button look hung for over a minute.
+  const writes: (() => Promise<unknown>)[] = [];
   const cards = new Map(existing.map((card) => [card.id, card]));
   for (const fixture of demoDoctors) {
     const record: DoctorRecord = { ...fixture, ...deriveFilterIds(fixture) };
-    await store.set(doctorKeys.record(record.id), JSON.stringify(record));
-    await store.set(doctorKeys.profile(record.linkNo), JSON.stringify(toProfile(record)));
-    await store.zadd(doctorKeys.index(), { score: record.createdAt, member: record.id });
-    await store.set(doctorKeys.byEmail(record.email), record.id);
-    await store.set(doctorKeys.byLink(record.linkNo), record.id);
-    await store.set(doctorKeys.bySlug(record.slug), record.id);
+    writes.push(
+      () => store.set(doctorKeys.record(record.id), JSON.stringify(record)),
+      () => store.set(doctorKeys.profile(record.linkNo), JSON.stringify(toProfile(record))),
+      () => store.zadd(doctorKeys.index(), { score: record.createdAt, member: record.id }),
+      () => store.set(doctorKeys.byEmail(record.email), record.id),
+      () => store.set(doctorKeys.byLink(record.linkNo), record.id),
+      () => store.set(doctorKeys.bySlug(record.slug), record.id),
+    );
     cards.set(record.id, toCard(record));
+  }
+  for (let i = 0; i < writes.length; i += 40) {
+    await Promise.all(writes.slice(i, i + 40).map((write) => write()));
   }
 
   await store.set(
@@ -59,11 +68,15 @@ export async function seedDemoData(store: Store): Promise<{ doctors: number }> {
     blogCards = [];
   }
   const byId = new Map(blogCards.map((c) => [c.id, c]));
-  for (const post of demoPosts) {
-    await store.set(blogKeys.post(post.id), JSON.stringify(post));
-    await store.set(blogKeys.bySlug(post.slug), post.id);
-    byId.set(post.id, toBlogCard(post));
-  }
+  await Promise.all(
+    demoPosts.flatMap((post) => {
+      byId.set(post.id, toBlogCard(post));
+      return [
+        store.set(blogKeys.post(post.id), JSON.stringify(post)),
+        store.set(blogKeys.bySlug(post.slug), post.id),
+      ];
+    }),
+  );
   await store.set(blogKeys.cards(), JSON.stringify([...byId.values()]));
 
   await store.set(appKey("meta:seeded"), String(Date.now()));

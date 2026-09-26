@@ -5,6 +5,7 @@ import { Brand } from "@/components/brand";
 import { DashNav, type NavItem } from "@/components/dash/dash-nav";
 import { DashStrings } from "@/components/dash/dash-strings";
 import { LanguageSwitch } from "@/components/language-switch";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { signOutAction } from "@/lib/actions/auth";
 import { getDictionary } from "@/lib/i18n";
@@ -48,8 +49,9 @@ export function DashShell({
           </div>
           <DashNav items={items} label={kicker} />
           <div className="mt-4 hidden border-t border-line pt-4 lg:mt-auto lg:block">
-            <div className="mb-3">
+            <div className="mb-3 flex items-center gap-2">
               <LanguageSwitch lang={lang} label={dict.common.switchLanguage} />
+              <ThemeToggle label={dict.common.switchTheme} />
             </div>
             <p className="truncate font-mono text-xs text-ink-faint" title={email}>
               {email}
@@ -82,6 +84,7 @@ export function DashShell({
           </main>
           <div className="flex items-center gap-3 px-4 pb-8 lg:hidden">
             <LanguageSwitch lang={lang} label={dict.common.switchLanguage} />
+            <ThemeToggle label={dict.common.switchTheme} />
             <form action={signOutAction}>
               <input type="hidden" name="lang" value={lang} />
               <Button type="submit" variant="ghost" size="sm">

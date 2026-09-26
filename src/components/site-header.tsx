@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { LanguageSwitch } from "@/components/language-switch";
 import { SearchPalette } from "@/components/search/search-palette";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { getDictionary } from "@/lib/i18n";
 import { localePath, type Locale } from "@/lib/i18n/config";
@@ -11,11 +12,10 @@ import { cn } from "@/lib/utils";
 /**
  * The site header.
  *
- * A Server Component: the only interactive parts are the search palette and
- * the language switch, which are their own client islands. That keeps the nav
- * links, the brand and the dictionary out of the client bundle entirely.
- *
- * No theme toggle: the site is dark-only (see app/[lang]/layout.tsx).
+ * A Server Component: the only interactive parts are the search palette, the
+ * language switch and the theme toggle, which are their own client islands.
+ * That keeps the nav links, the brand and the dictionary out of the client
+ * bundle entirely.
  */
 export function SiteHeader({ lang }: { lang: Locale }) {
   const dict = getDictionary(lang);
@@ -55,6 +55,7 @@ export function SiteHeader({ lang }: { lang: Locale }) {
         <div className="ml-auto flex items-center gap-2">
           <SearchPalette lang={lang} strings={dict.search} />
           <LanguageSwitch lang={lang} label={dict.common.switchLanguage} />
+          <ThemeToggle label={dict.common.switchTheme} />
           <Button asChild size="sm" className={cn("hidden sm:inline-flex", bn)}>
             <Link href={localePath(lang, "/signin")}>{dict.common.signIn}</Link>
           </Button>

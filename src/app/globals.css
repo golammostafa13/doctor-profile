@@ -21,8 +21,8 @@
    has a label.
 
    Raw values on :root, mirrored into @theme inline below so Tailwind
-   generates utilities from them. The site is dark-only (see
-   theme-provider.tsx), so there is one palette, not a light/dark pair.
+   generates utilities from them. Dark is the default; `html.light` swaps in
+   the day palette below (see theme-toggle.tsx).
    ========================================================================== */
 
 :root {
@@ -89,6 +89,13 @@
   --shadow-accent-lg: 0 0 0 1px color-mix(in srgb, var(--volt) 60%, transparent),
     0 12px 36px -8px color-mix(in srgb, var(--volt) 70%, transparent);
   --glow-hot: 0 0 36px -8px color-mix(in srgb, var(--signal) 60%, transparent);
+  --glow-btn: color-mix(in srgb, var(--volt) 30%, transparent);
+  --glow-btn-hover: color-mix(in srgb, var(--volt) 50%, transparent);
+
+  /* The ground's texture: see body. */
+  --grid-line: color-mix(in srgb, white 2.5%, transparent);
+  --bloom-hot: color-mix(in srgb, var(--signal) 13%, transparent);
+  --bloom-volt: color-mix(in srgb, var(--volt) 5%, transparent);
 
   /* ------------------------------------------------------------------------
      Motion.
@@ -115,6 +122,57 @@
   --ease-physical: cubic-bezier(0.22, 1, 0.36, 1);
 
   color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   Day.
+   The same three colours on paper. Volt is unreadable as type on white, so
+   the roles turn over: ink-black becomes the action colour (a black button
+   with volt type), and volt drops to a highlighter — the soft fills, the
+   active-thing wash, search hits. Signal is deepened just enough to pass as
+   text on white.
+   -------------------------------------------------------------------------- */
+:root.light {
+  --signal: #e0103a;
+
+  --bg: color-mix(in srgb, var(--void) 4%, white);
+  --bg-deep: color-mix(in srgb, var(--void) 8%, white);
+  --surface: white;
+  --surface-2: color-mix(in srgb, var(--void) 3%, white);
+
+  --ink: #0b0f12;
+  --ink-mute: color-mix(in srgb, var(--ink) 70%, white);
+  --ink-faint: color-mix(in srgb, var(--ink) 55%, white);
+
+  --line: color-mix(in srgb, var(--void) 15%, white);
+  --line-soft: color-mix(in srgb, var(--void) 9%, white);
+
+  --accent: var(--void);
+  --accent-hover: color-mix(in srgb, var(--void) 82%, white);
+  --accent-ink: var(--volt);
+  --accent-soft: color-mix(in srgb, var(--volt) 30%, white);
+  --accent-lit: var(--volt);
+
+  --hot: var(--signal);
+  --hot-soft: color-mix(in srgb, var(--signal) 9%, white);
+
+  --card-lip: color-mix(in srgb, var(--void) 4%, transparent);
+
+  --ok: var(--void);
+  --warn: var(--void);
+
+  --shadow-1: 0 1px 2px rgba(5, 8, 10, 0.08);
+  --shadow-2: 0 2px 4px rgba(5, 8, 10, 0.06), 0 10px 24px rgba(5, 8, 10, 0.08);
+  --shadow-3: 0 4px 8px rgba(5, 8, 10, 0.07), 0 20px 40px rgba(5, 8, 10, 0.1);
+  --shadow-4: 0 8px 16px rgba(5, 8, 10, 0.08), 0 36px 68px rgba(5, 8, 10, 0.14);
+  --glow-btn: color-mix(in srgb, var(--void) 22%, transparent);
+  --glow-btn-hover: color-mix(in srgb, var(--volt) 70%, transparent);
+
+  --grid-line: color-mix(in srgb, var(--void) 5%, transparent);
+  --bloom-hot: color-mix(in srgb, var(--signal) 8%, transparent);
+  --bloom-volt: color-mix(in srgb, var(--volt) 18%, transparent);
+
+  color-scheme: light;
 }
 
 /* ==========================================================================
@@ -206,20 +264,10 @@ body {
      faint volt one opposite, fixed so they stay put while the page scrolls,
      over a hairline grid. All three are the palette at low strength. */
   background:
-    radial-gradient(
-      60rem 40rem at -10% -10%,
-      color-mix(in srgb, var(--signal) 13%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      50rem 36rem at 110% 0%,
-      color-mix(in srgb, var(--volt) 5%, transparent),
-      transparent 60%
-    ),
-    linear-gradient(color-mix(in srgb, white 2.5%, transparent) 1px, transparent 1px)
-      0 0 / 100% 56px,
-    linear-gradient(90deg, color-mix(in srgb, white 2.5%, transparent) 1px, transparent 1px)
-      0 0 / 56px 100%,
+    radial-gradient(60rem 40rem at -10% -10%, var(--bloom-hot), transparent 60%),
+    radial-gradient(50rem 36rem at 110% 0%, var(--bloom-volt), transparent 60%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 100% 56px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 56px 100%,
     var(--bg);
   background-attachment: fixed;
   color: var(--ink);
@@ -474,7 +522,7 @@ h3,
    corners that slide in and lock on when it is hovered or focused. A card
    takes a tone — `data-tone="hot"` — for a signal edge instead of volt. */
 .hud-card {
-  --tone: var(--volt);
+  --tone: var(--accent);
   position: relative;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -547,7 +595,7 @@ h3,
 /* The doctor card: a HUD card that lifts, with a volt bar that runs along
    its foot as it does. */
 .doctor-card {
-  --tone: var(--volt);
+  --tone: var(--accent);
   position: relative;
   background:
     linear-gradient(var(--tone), var(--tone)) 0 100% / 0% 2px no-repeat,
@@ -669,12 +717,12 @@ h3,
 /* A cut element cannot cast a box-shadow, so the volt button glows with a
    drop-shadow on itself instead. */
 .btn-glow {
-  filter: drop-shadow(0 6px 18px color-mix(in srgb, var(--volt) 30%, transparent));
+  filter: drop-shadow(0 6px 18px var(--glow-btn));
   transition: filter 320ms ease;
 }
 
 .btn-glow:hover {
-  filter: drop-shadow(0 10px 26px color-mix(in srgb, var(--volt) 50%, transparent));
+  filter: drop-shadow(0 10px 26px var(--glow-btn-hover));
 }
 
 /* Corner brackets OUTSIDE a block — the frame around the hero portrait. */
@@ -695,15 +743,15 @@ h3,
 .hud-frame::before {
   top: -10px;
   left: -10px;
-  border-top: 2px solid var(--volt);
-  border-left: 2px solid var(--volt);
+  border-top: 2px solid var(--accent);
+  border-left: 2px solid var(--accent);
 }
 
 .hud-frame::after {
   right: -10px;
   bottom: -10px;
-  border-right: 2px solid var(--volt);
-  border-bottom: 2px solid var(--volt);
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
 }
 
 .hud-frame:hover::before {

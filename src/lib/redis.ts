@@ -20,10 +20,12 @@
  * once at module load — these are deployment configuration, not something that
  * changes between requests.
  */
+// `||`, not `??`: an env file with `KV_REST_API_URL=` left blank (as
+// .env.example ships) must fall through to the UPSTASH_* pair, not win with "".
 const redisUrl =
-  process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
+  process.env.KV_REST_API_URL?.trim() || process.env.UPSTASH_REDIS_REST_URL?.trim();
 const redisToken =
-  process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
+  process.env.KV_REST_API_TOKEN?.trim() || process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
 
 /**
  * This site's namespace inside a possibly shared database.
