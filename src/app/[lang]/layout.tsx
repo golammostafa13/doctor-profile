@@ -10,7 +10,7 @@ import {
 import { hasLocale, locales, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
-import { themeScript } from "@/components/theme-toggle";
+import { ThemeScript } from "@/components/theme-toggle";
 import "@/app/globals.css";
 
 /**
@@ -96,7 +96,7 @@ export default async function LocaleLayout(props: LayoutProps<"/[lang]">) {
 
   return (
     // Rendered dark, which is the default. A visitor who has chosen day gets
-    // `light` swapped in by the inline script before first paint — hence
+    // `light` swapped in by ThemeScript before first paint — hence
     // suppressHydrationWarning, since that class differs from the markup.
     <html
       lang={lang}
@@ -104,7 +104,7 @@ export default async function LocaleLayout(props: LayoutProps<"/[lang]">) {
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <ThemeScript />
       </head>
       <body className="min-h-dvh bg-bg text-ink antialiased">
         <a

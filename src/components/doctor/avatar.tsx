@@ -103,7 +103,7 @@ export function Avatar({
   }
 
   const h = hash(seed);
-  const tone = h % 2 === 0 ? "var(--accent)" : "var(--signal)";
+  const tone = h % 2 === 0 ? "var(--accent)" : "var(--hot)";
   const slant = 30 + (h % 40);
   const gradientId = `av-${seed.replace(/[^a-zA-Z0-9]/g, "")}`;
 

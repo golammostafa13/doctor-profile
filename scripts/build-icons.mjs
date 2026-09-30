@@ -25,15 +25,16 @@ const require = createRequire(import.meta.url);
 const sharp = require("sharp");
 const appDir = join(dirname(fileURLToPath(import.meta.url)), "..", "src", "app");
 
-/** The tile, as in globals.css `.brand-mark`: volt, with the bottom-right
+/** The tile, as in globals.css `.brand-mark`: ice, with the bottom-right
  *  corner cut. `cut` is false for the touch icon, which iOS masks itself. */
 const tile = (inner, cut) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-  <path d="${cut ? "M0 0H48V34.5L34.5 48H0Z" : "M0 0H48V48H0Z"}" fill="#fce300"/>${inner}</svg>`;
+  <defs><linearGradient id="t" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4e8ff"/><stop offset=".45" stop-color="#8fd3ff"/><stop offset="1" stop-color="#5fb4f0"/></linearGradient></defs>
+  <path d="${cut ? "M0 0H48V34.5L34.5 48H0Z" : "M0 0H48V48H0Z"}" fill="url(#t)"/>${inner}</svg>`;
 
-/** The drawing, as in `icon.svg` and `BrandArt`, knocked out in void. */
+/** The drawing, as in `icon.svg` and `BrandArt`, knocked out in midnight. */
 const mark = `
-  <circle cx="24" cy="15.4" r="7" fill="#05080a"/>
-  <path d="M10 33.6h5.4l3-6.4 4 13 3.4-8.4 2.2 1.8H38" stroke="#05080a" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  <circle cx="24" cy="15.4" r="7" fill="#07111f"/>
+  <path d="M10 33.6h5.4l3-6.4 4 13 3.4-8.4 2.2 1.8H38" stroke="#07111f" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
 
 const png = (svg, size) =>
   sharp(Buffer.from(svg), { density: 900 }).resize(size, size).png().toBuffer();

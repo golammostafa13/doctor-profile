@@ -45,7 +45,7 @@ export async function SiteFooter({ lang }: { lang: Locale }) {
       {/* A volt-to-signal rule along the top edge: the palette, once. */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-0 -top-px h-px bg-[linear-gradient(90deg,transparent,var(--volt)_30%,var(--signal)_70%,transparent)]"
+        className="absolute inset-x-0 -top-px h-px bg-[linear-gradient(90deg,transparent,var(--ice)_30%,var(--champagne)_70%,transparent)]"
       />
       <div className="mx-auto max-w-6xl px-4 py-14">
         <AdSlot slot="footer" lang={lang} className="mb-12" />

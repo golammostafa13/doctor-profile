@@ -78,7 +78,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
           <span className="block text-[clamp(2.4rem,8vw,5.2rem)] text-ink">
             {dict.home.titleLead}
           </span>
-          <span className="block text-[clamp(2.4rem,8vw,5.2rem)] text-hot [text-shadow:0_0_40px_color-mix(in_srgb,var(--signal)_35%,transparent)]">
+          <span className="block text-[clamp(2.4rem,8vw,5.2rem)] text-hot [text-shadow:0_0_48px_var(--glow-title)]">
             {dict.home.titleAccent}
           </span>
         </h1>

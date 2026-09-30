@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useLayoutEffect, useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
 /**
@@ -8,17 +8,52 @@ import { Moon, Sun } from "lucide-react";
  *
  * The theme is a class on <html> — `dark` as rendered, `light` once chosen —
  * and the choice lives in localStorage rather than a cookie, so no page has to
- * read a request header and every page can still prerender. The class is put
- * back before first paint by `themeScript` in app/[lang]/layout.tsx; this
- * component only reads it and flips it.
+ * read a request header and every page can still prerender. `ThemeScript`
+ * puts the class back before first paint; the toggle only reads it and flips
+ * it.
  *
  * The <html> class is the source of truth, observed rather than mirrored into
  * React state, so every toggle on the page (the dashboard has two) agrees.
  */
-export const themeStorageKey = "theme";
+const themeStorageKey = "theme";
 
 /** Runs inline in <head>, before anything paints. Keep it tiny and ES5. */
-export const themeScript = `try{if(localStorage.getItem("${themeStorageKey}")==="light"){var c=document.documentElement.classList;c.remove("dark");c.add("light")}}catch(e){}`;
+const themeScript = `try{if(localStorage.getItem("${themeStorageKey}")==="light"){var c=document.documentElement.classList;c.remove("dark");c.add("light")}}catch(e){}`;
+
+function applyStoredTheme() {
+  try {
+    if (localStorage.getItem(themeStorageKey) === "light") {
+      document.documentElement.classList.replace("dark", "light");
+    }
+  } catch {
+    // Storage blocked: stay on the rendered default.
+  }
+}
+
+/**
+ * Restores the chosen theme, in two situations.
+ *
+ * On a full page load, the inline script in the server HTML does it before
+ * first paint. That script must not be a live <script> on the client: React
+ * never runs one it creates, and warns about it. So the client renders it as
+ * an inert data block (`text/plain`), and suppressHydrationWarning covers the
+ * one attribute that differs from the server markup.
+ *
+ * On a client navigation that remounts the locale layout — switching
+ * language, /en → /bn — React re-acquires <html> and resets its attributes to
+ * the rendered `dark`. The layout effect puts `light` back after that commit
+ * and before the browser paints it.
+ */
+export function ThemeScript() {
+  useLayoutEffect(applyStoredTheme, []);
+  return (
+    <script
+      type={typeof window === "undefined" ? undefined : "text/plain"}
+      suppressHydrationWarning
+      dangerouslySetInnerHTML={{ __html: themeScript }}
+    />
+  );
+}
 
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange);
